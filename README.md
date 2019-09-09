@@ -5,9 +5,9 @@ Personalized VIM/NeoVim configurations
 ## VIM Installation
 
 ```
-git clone current project
+git clone https://github.com/bencao/vimo.git ~/.vimo
 
-cd project
+cd ~/.vimo
 
 ln -s "$(pwd)/vim" ~/.vim
 ln -s "$(pwd)/vimrc" ~/.vimrc
@@ -16,9 +16,9 @@ ln -s "$(pwd)/vimrc" ~/.vimrc
 ## NeoVim Installation
 
 ```
-git clone current project
+git clone https://github.com/bencao/vimo.git ~/.vimo
 
-cd project
+cd ~/.vimo
 
 mkdir -p ~/.config/nvim
 
