@@ -33,7 +33,7 @@ ln -s "$(pwd)/vimrc" ~/.config/nvim/init.vim
 
 ## Plugins Selection and Why
 
-[List of Plugins](https://raw.githubusercontent.com/bencao/vimo/master/PLUGINS.md)
+[List of Plugins](https://github.com/bencao/vimo/blob/master/PLUGINS.md)
 
 ## Vim Frequently Used Key Bindings
 
