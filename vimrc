@@ -57,6 +57,7 @@ set autoread
 
 " pathogen - the runtime for Vim plugins
 execute pathogen#infect()
+Helptags
 
 """ Shortcut settings
 
@@ -68,8 +69,8 @@ let mapleader=" "
 " double leader to switch between current and last edit file
 nnoremap <leader><leader> <c-^>
 
-" open vim_in_docker key binding help
-nnoremap <leader>h :help vim_in_docker<CR>
+" open vimo key binding help
+nnoremap <leader>h :help vimo<CR>
 
 " open new splits
 nnoremap <leader>s :vsp<CR>
