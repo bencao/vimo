@@ -35,6 +35,6 @@ Definition of Importance
 | [VIM Multiple Cursor](https://github.com/terryma/vim-multiple-cursors.git) | Select the same keyword in different lines, then change them together | High | N/A |
 | [VIM Prettier](https://github.com/prettier/vim-prettier) | A vim plugin wrapper for prettier, pre-configured with custom default prettier settings. | Essential | N/A |
 | [VIM Repeat](https://github.com/tpope/vim-repeat.git) | Wrap plugin operations as a "Change" so it can be repeated or undoed | Medium | N/A |
-| [VIM Solidity](https://github.com/tomlion/vim-solidity) | Solidity syntax highlight | High/Low (It depends on whether we write Solidity or not) | N/A |
+| [VIM Solidity](https://github.com/tomlion/vim-solidity) | Solidity syntax highlighting | High/Low (It depends on whether we write Solidity or not) | N/A |
 | [VIM Surround](https://github.com/tpope/vim-surround.git) | Surround parentheses, brackets, quotes, XML tags, and more | Medium | N/A |
-| [VIM Terraform](https://github.com/hashivim/vim-terraform) | Terraform syntax highlight | High/Low (It depends on whether we write Solidity or not) | N/A |
+| [VIM Terraform](https://github.com/hashivim/vim-terraform) | Terraform syntax highlighting | High/Low (It depends on whether we write Terraform or not) | N/A |
