@@ -75,8 +75,9 @@ rm -rf ~/.vimo
 - [insert mode] <kbd>Tab</kbd> auto complete with next candidate
 - [insert mode] <kbd>Shift + Tab</kbd> auto complete with previous candidate
 
-### Alignment Key Bindings
+### Format/Alignment Key Bindings
 
+- [visual mode] <kbd>space then p</kbd> format the file with Prettier
 - [visual mode] <kbd>Enter then =</kbd> align selected lines by =
 - [visual mode] <kbd>Enter then :</kbd> align selected lines by :
 
