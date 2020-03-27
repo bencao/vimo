@@ -4,32 +4,45 @@ Personalized VIM/NeoVim configurations
 
 ## Installation
 
-### VIM Installation
-
+<details><summary>VIM</summary>
+<p>
 ```
 git clone https://github.com/bencao/vimo.git ~/.vimo
 
-cd ~/.vimo
-
-if [ -f ~/.vim ]; then mv ~/.vim ~/.vim_old; fi
-ln -s "$(pwd)/vim" ~/.vim
-ln -s "$(pwd)/vimrc" ~/.vimrc
+~/.vimo/install_vim.sh
 ```
+</p>
+</details>
 
-### NeoVim Installation
-
+<details><summary>NeoVim</summary>
+<p>
 ```
 git clone https://github.com/bencao/vimo.git ~/.vimo
 
-cd ~/.vimo
-
-if [ -f ~/.config/nvim ]; then mv ~/.config/nvim ~/.config/nvim_old; fi
-mkdir -p ~/.config/nvim
-
-ln -s "$(pwd)/vim/autoload" ~/.config/nvim/autoload
-ln -s "$(pwd)/vim/bundle" ~/.config/nvim/bundle
-ln -s "$(pwd)/vimrc" ~/.config/nvim/init.vim
+~/.vimo/install_neovim.sh
 ```
+</p>
+</details>
+
+## Uninstallation
+
+<details><summary>VIM</summary>
+<p>
+```
+~/.vimo/uninstall_vim.sh
+rm -rf ~/.vimo
+```
+</p>
+</details>
+
+<details><summary>NeoVim</summary>
+<p>
+```
+~/.vimo/uninstall_neovim.sh
+rm -rf ~/.vimo
+```
+</p>
+</details>
 
 ## Plugins Selection and Why
 
