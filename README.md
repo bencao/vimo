@@ -6,21 +6,25 @@ Personalized VIM/NeoVim configurations
 
 <details><summary>VIM</summary>
 <p>
+
 ```
 git clone https://github.com/bencao/vimo.git ~/.vimo
 
 ~/.vimo/install_vim.sh
 ```
+
 </p>
 </details>
 
 <details><summary>NeoVim</summary>
 <p>
+
 ```
 git clone https://github.com/bencao/vimo.git ~/.vimo
 
 ~/.vimo/install_neovim.sh
 ```
+
 </p>
 </details>
 
@@ -28,19 +32,23 @@ git clone https://github.com/bencao/vimo.git ~/.vimo
 
 <details><summary>VIM</summary>
 <p>
+
 ```
 ~/.vimo/uninstall_vim.sh
 rm -rf ~/.vimo
 ```
+
 </p>
 </details>
 
 <details><summary>NeoVim</summary>
 <p>
+
 ```
 ~/.vimo/uninstall_neovim.sh
 rm -rf ~/.vimo
 ```
+
 </p>
 </details>
 
