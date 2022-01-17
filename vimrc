@@ -208,7 +208,7 @@ let g:prettier#config#trailing_comma = 'none'
 
 " flow|babylon|typescript|css|less|scss|json|graphql|markdown
 " Prettier default: babylon
-let g:prettier#config#parser = 'babylon'
+"let g:prettier#config#parser = 'babylon'
 
 " cli-override|file-override|prefer-file
 let g:prettier#config#config_precedence = 'prefer-file'
