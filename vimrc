@@ -9,6 +9,9 @@ set termguicolors
 " highlight search
 set hlsearch
 
+" disable mouse reporting
+set mouse=
+
 " filetype based indentation
 filetype plugin indent on
 " fallback to autoindent
