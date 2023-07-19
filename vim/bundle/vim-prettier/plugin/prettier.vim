@@ -109,11 +109,6 @@ let g:prettier#config#single_quote = get(g:,'prettier#config#single_quote', 'fal
 " See more: https://prettier.io/docs/en/options.html#bracket-spacing
 let g:prettier#config#bracket_spacing = get(g:,'prettier#config#bracket_spacing', 'true')
 
-" put > on the last line instead of new line
-" default: 'false'
-" See more: https://prettier.io/docs/en/options.html#jsx-brackets
-let g:prettier#config#jsx_bracket_same_line = get(g:,'prettier#config#jsx_bracket_same_line', 'false')
-
 " avoid wrapping a single arrow function param in parens
 " avoid|always
 " default: 'always'
