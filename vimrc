@@ -128,7 +128,7 @@ nnoremap <leader>a :Ag<SPACE>
 nnoremap <leader>k :Ag "\b<C-R><C-W>\b"<CR>:cw<CR>
 
 " rebuild ctags
-nnoremap <leader>r :!ctags -R --exclude=.git --exclude=node_modules --exclude=_book .<CR>
+nnoremap <leader>r :!ctags --recurse=yes --exclude=.git --exclude=.next --exclude=node_modules --exclude=_book .<CR>
 
 " moving between windows
 nnoremap <C-j> <C-w>j

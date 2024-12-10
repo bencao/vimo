@@ -1,23 +1,10 @@
 # VIMO
 
-Personalized VIM/NeoVim configurations
+Personalized NeoVim configurations
 
 ## Installation
 
-<details><summary>VIM</summary>
-<p>
-
-```
-git clone https://github.com/bencao/vimo.git ~/.vimo
-
-~/.vimo/install_vim.sh
-```
-
-</p>
-</details>
-
-<details><summary>NeoVim</summary>
-<p>
+Install NeoVim first if you haven't done so.
 
 ```
 git clone https://github.com/bencao/vimo.git ~/.vimo
@@ -25,32 +12,14 @@ git clone https://github.com/bencao/vimo.git ~/.vimo
 ~/.vimo/install_neovim.sh
 ```
 
-</p>
-</details>
+Also install [Universal Ctags](https://github.com/universal-ctags/ctags) for ctags based code navigation.
 
 ## Uninstallation
-
-<details><summary>VIM</summary>
-<p>
-
-```
-~/.vimo/uninstall_vim.sh
-rm -rf ~/.vimo
-```
-
-</p>
-</details>
-
-<details><summary>NeoVim</summary>
-<p>
 
 ```
 ~/.vimo/uninstall_neovim.sh
 rm -rf ~/.vimo
 ```
-
-</p>
-</details>
 
 ## Plugins Selection and Why
 
@@ -58,7 +27,8 @@ rm -rf ~/.vimo
 
 ## Vim Frequently Used Key Bindings
 
-### VIM in Docker Help
+### Vimo Help
+
 - [normal mode] <kbd>Space then h</kbd> open vimo help in VIM
 
 ### Movement Key Bindings
@@ -113,4 +83,3 @@ rm -rf ~/.vimo
 - `:nmap` normal mode key mappings
 - `:vmap` visual mode key mappings
 - `:imap` insert mode key mappings
-

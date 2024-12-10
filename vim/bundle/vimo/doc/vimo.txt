@@ -10,7 +10,7 @@ CONTENTS                                  *vimo-contents*
 ======================================================================
 1. Key Bindings                           *vimo_key_bindings*
 
-### VIM in Docker Help
+### vimo Help
 - [normal mode] `space then h` open vimo help in VIM
 
 ### Movement Key Bindings

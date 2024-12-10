@@ -16,7 +16,7 @@ Definition of Importance
 | Plugin        | Value           | Importance | Alternatives |
 | :------------ | :-------------- | :--------: | :----------- |
 | [ag.vim](https://github.com/rking/ag.vim) | Search text patterns in directories | Essential | [CtrlSF](https://github.com/dyng/ctrlsf.vim) (not utilizing the vim Quickfix List) |
-| [Copilot](https://github.com/github/copilot.vim) | GitHub Copilot provides autocomplete-style suggestions from an AI pair programmer as you code. | Essential | |
+| [Copilot](https://github.com/github/copilot.vim) | GitHub Copilot provides autocomplete-style suggestions from an AI pair programmer as you code. | High | |
 | [CtrlP](https://github.com/kien/ctrlp.vim.git) | Quickly navigate to any files given a fuzzy matching pattern | Essential | [Unite](https://github.com/Shougo/unite.vim.git) (sometimes hung for big projects) |
 | [elm.vim](https://github.com/lambdatoast/elm.vim) | Elm lang support: syntax highlighting and indent | Medium | N/A |
 | [NerdTree](https://github.com/scrooloose/nerdtree.git) | Tree view of project files and handy create/delete/update file operations | Essential | [netrw](http://www.vim.org/scripts/script.php?script_id=1075) (shipped with VIM but missing features) |
