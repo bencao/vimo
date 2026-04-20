@@ -1,4 +1,4 @@
-" Copyright (c) 2016-2021 Jon Parise <jon@indelible.org>
+" Copyright (c) Jon Parise <jon@indelible.org>
 "
 " Permission is hereby granted, free of charge, to any person obtaining a copy
 " of this software and associated documentation files (the "Software"), to
@@ -21,7 +21,7 @@
 " Language: GraphQL
 " Maintainer: Jon Parise <jon@indelible.org>
 
-if (exists('b:did_ftplugin'))
+if exists('b:did_ftplugin')
   finish
 endif
 let b:did_ftplugin = 1

@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2018 Bailey Ling et al.
+" MIT License. Copyright (c) 2013-2021 Bailey Ling et al.
 " vim: et ts=2 sts=2 sw=2
 
 " http://got-ravings.blogspot.com/2008/10/vim-pr0n-statusline-whitespace-flags.html
@@ -7,10 +7,15 @@ scriptencoding utf-8
 
 let s:show_message = get(g:, 'airline#extensions#whitespace#show_message', 1)
 let s:symbol = get(g:, 'airline#extensions#whitespace#symbol', g:airline_symbols.whitespace)
-let s:default_checks = ['indent', 'trailing', 'mixed-indent-file']
+let s:default_checks = ['indent', 'trailing', 'mixed-indent-file', 'conflicts']
+let s:searchcount = exists('*searchcount')
 
 let s:enabled = get(g:, 'airline#extensions#whitespace#enabled', 1)
-let s:skip_check_ft = {'make': ['indent', 'mixed-indent-file']}
+let s:skip_check_ft = {'make': ['indent', 'mixed-indent-file'],
+      \ 'csv': ['indent', 'mixed-indent-file'],
+      \ 'mail': ['trailing'],
+      \ 'diff': ['trailing'],
+      \ 'gitcommit': ['trailing']}
 
 function! s:check_mixed_indent()
   let indent_algo = get(g:, 'airline#extensions#whitespace#mixed_indent_algo', 0)
@@ -23,9 +28,9 @@ function! s:check_mixed_indent()
     let t_l_s = '(^\t+ {' . &ts . ',}' . '\S)'
     return search('\v' . t_s_t . '|' . t_l_s, 'nw')
   elseif indent_algo == 2
-    return search('\v(^\t* +\t\s*\S)', 'nw')
+    return search('\v(^\t* +\t\s*\S)', 'nw', 0, 500)
   else
-    return search('\v(^\t+ +)|(^ +\t+)', 'nw')
+    return search('\v(^\t+ +)|(^ +\t+)', 'nw', 0, 500)
   endif
 endfunction
 
@@ -47,6 +52,32 @@ function! s:check_mixed_indent_file()
   endif
 endfunction
 
+function! s:conflict_marker()
+  " Checks for git conflict markers
+  " space required for jj conflict marker: #2727
+  let annotation = '\%([0-9A-Za-z_.: ]\+\)\?'
+  if match(['rst', 'markdown', 'rmd'], &ft) >= 0
+    " rst filetypes use '=======' as header
+    let pattern = '^\%(\%(<\{7} '.annotation. '\)\|\%(>\{7\} '.annotation.'\)\)$'
+  else
+    let pattern = '^\%(\%(<\{7} '.annotation. '\)\|\%(=\{7\}\)\|\%(>\{7\} '.annotation.'\)\)$'
+  endif
+  return search(pattern, 'nw')
+endfunction
+
+function! s:conflict_marker_count()
+  if !s:searchcount
+    return 0
+  endif
+  " Checks for git conflict markers
+  " space required for jj conflict marker: #2727
+  let annotation = '\%([0-9A-Za-z_.: ]\+\)\?'
+  let pattern = '^<\{7} '.annotation. '$'
+  let cnt = searchcount(#{pattern: pattern, recompute: 1, timeout: 10})
+  return has_key(cnt, 'total') ? cnt.total : 0
+endfunction
+
+
 function! airline#extensions#whitespace#check()
   let max_lines = get(g:, 'airline#extensions#whitespace#max_lines', 20000)
   if &readonly || !&modifiable || !s:enabled || line('$') > max_lines
@@ -64,7 +95,8 @@ function! airline#extensions#whitespace#check()
     let check = 'trailing'
     if index(checks, check) > -1 && index(get(skip_check_ft, &ft, []), check) < 0
       try
-        let regexp = get(g:, 'airline#extensions#whitespace#trailing_regexp', '\s$')
+        let regexp = get(b:, 'airline_whitespace_trailing_regexp',
+              \ get(g:, 'airline#extensions#whitespace#trailing_regexp', '\s$'))
         let trailing = search(regexp, 'nw')
       catch
         call airline#util#warning(printf('Whitespace: error occurred evaluating "%s"', regexp))
@@ -90,7 +122,13 @@ function! airline#extensions#whitespace#check()
       let long = search('\%>'.&tw.'v.\+', 'nw')
     endif
 
-    if trailing != 0 || mixed != 0 || long != 0 || !empty(mixed_file)
+    let conflicts = 0
+    if index(checks, 'conflicts') > -1
+      let conflicts = s:conflict_marker()
+      let conflicts_count = s:conflict_marker_count()
+    endif
+
+    if trailing != 0 || mixed != 0 || long != 0 || !empty(mixed_file) || conflicts != 0
       let b:airline_whitespace_check = s:symbol
       if strlen(s:symbol) > 0
         let space = (g:airline_symbols.space)
@@ -115,8 +153,18 @@ function! airline#extensions#whitespace#check()
           let mixed_indent_file_fmt = get(g:, 'airline#extensions#whitespace#mixed_indent_file_format', '[%s]mix-indent-file')
           let b:airline_whitespace_check .= space.printf(mixed_indent_file_fmt, mixed_file)
         endif
+        if conflicts != 0
+          let conflicts_fmt = get(g:, 'airline#extensions#whitespace#conflicts_format', '[%s]conflicts')
+          let b:airline_whitespace_check .= space.printf(conflicts_fmt, conflicts)
+          if conflicts_count > 1
+            let b:airline_whitespace_check .= printf('*%d', conflicts_count)
+          endif
+        endif
       endif
     endif
+  endif
+  if airline#util#has_multiline()
+    return b:airline_whitespace_check
   endif
   return airline#util#shorten(b:airline_whitespace_check, 120, 9)
 endfunction
@@ -135,8 +183,16 @@ function! airline#extensions#whitespace#toggle()
 
   if exists("g:airline#extensions#whitespace#enabled")
     let g:airline#extensions#whitespace#enabled = s:enabled
-    if s:enabled && match(g:airline_section_warning, '#whitespace#check') < 0
-      let g:airline_section_warning .= airline#section#create(['whitespace'])
+    if s:enabled
+      if airline#util#has_multiline() && exists('g:airline_section_warning2')
+        if match(g:airline_section_warning2, '#whitespace#check') < 0
+          let g:airline_section_warning2 .= airline#section#create(['whitespace'])
+        endif
+      else
+        if match(g:airline_section_warning, '#whitespace#check') < 0
+          let g:airline_section_warning .= airline#section#create(['whitespace'])
+        endif
+      endif
       call airline#update_statusline()
     endif
   endif
@@ -160,12 +216,16 @@ function! airline#extensions#whitespace#init(...)
 endfunction
 
 function! s:ws_refresh()
+  if !exists('#airline')
+    " airline disabled
+    return
+  endif
   if get(b:, 'airline_ws_changedtick', 0) == b:changedtick
     return
   endif
   unlet! b:airline_whitespace_check
-  if get(g:, 'airline_skip_empty_sections', 0)
-    exe ':AirlineRefresh'
+  if get(g:, 'airline_skip_empty_sections', 0) || airline#util#has_multiline()
+    exe ':AirlineRefresh!'
   endif
   let b:airline_ws_changedtick = b:changedtick
 endfunction

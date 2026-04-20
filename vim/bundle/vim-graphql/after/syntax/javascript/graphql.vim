@@ -1,4 +1,4 @@
-" Copyright (c) 2016-2021 Jon Parise <jon@indelible.org>
+" Copyright (c) Jon Parise <jon@indelible.org>
 "
 " Permission is hereby granted, free of charge, to any person obtaining a copy
 " of this software and associated documentation files (the "Software"), to
@@ -21,48 +21,81 @@
 " Language: GraphQL
 " Maintainer: Jon Parise <jon@indelible.org>
 
-if exists('b:current_syntax')
-  let s:current_syntax = b:current_syntax
-  unlet b:current_syntax
+call graphql#embed_syntax('javaScriptGraphQL')
+
+let s:tags = graphql#javascript_tags()
+let s:functions = graphql#javascript_functions()
+
+if !empty(s:tags)
+  exec 'syntax match graphqlTaggedTemplate +\%(' . join(s:tags, '\|') . '\)\ze`+ '
+        \ 'nextgroup=graphqlTemplateString'
+  exec 'syntax region graphqlTemplateString matchgroup=javaScriptStringT '
+        \ 'start=+\%(' . join(s:tags, '\|') . '\)\@20<=`+ skip=+\\\\\|\\`+ end=+`+ '
+        \ 'contains=@javaScriptGraphQL,javaScriptSpecial,javaScriptEmbed,@htmlPreproc '
+        \ 'extend'
 endif
-
-let b:graphql_nested_syntax = 1
-syn include @GraphQLSyntax syntax/graphql.vim
-unlet b:graphql_nested_syntax
-
-if exists('s:current_syntax')
-  let b:current_syntax = s:current_syntax
+if !empty(s:functions)
+  exec 'syntax match graphqlFunctionCall +\%(' . join(s:functions, '\|') . '\)\ze\s*(+ '
+        \ 'nextgroup=graphqlFunctionArgs skipwhite skipnl'
+  syntax region graphqlFunctionArgs start=+(+ end=+)+
+        \ contains=graphqlFunctionLiteral
+        \ contained transparent extend
+  syntax region graphqlFunctionLiteral matchgroup=javaScriptStringT
+        \ start=+`+ skip=+\\\\\|\\`+ end=+`+
+        \ contains=@javaScriptGraphQL,javaScriptSpecial,javaScriptEmbed,@htmlPreproc
+        \ contained extend
 endif
+syntax region graphqlTemplateString matchgroup=javaScriptStringT
+      \ start=+`#\s\{,4\}\(gql\|graphql\)\>\s*$+ skip=+\\\\\|\\`+ end=+`+
+      \ contains=@javaScriptGraphQL,javaScriptSpecial,javaScriptEmbed,@htmlPreproc
+      \ extend
+syntax region graphqlTemplateExpression 
+      \ start=+${+ end=+}+
+      \ contains=@javaScriptEmbededExpr contained containedin=graphqlFold
+      \ keepend
 
-let s:tags = '\%(' . join(graphql#javascript_tags(), '\|') . '\)'
+hi def link graphqlTemplateString javaScriptStringT
+hi def link graphqlFunctionLiteral javaScriptStringT
+hi def link graphqlTaggedTemplate javaScriptEmbed
+hi def link graphqlFunctionCall javaScriptEmbed
+hi def link graphqlTemplateExpression javaScriptEmbed
 
-if graphql#has_syntax_group('jsTemplateExpression')
-  " pangloss/vim-javascript
-  exec 'syntax region graphqlTemplateString matchgroup=jsTemplateString start=+' . s:tags . '\@20<=`+ skip=+\\\\\|\\`+ end=+`+ contains=@GraphQLSyntax,jsTemplateExpression,jsSpecial extend'
-  exec 'syntax match graphqlTaggedTemplate +' . s:tags . '\ze`+ nextgroup=graphqlTemplateString'
-  syntax region graphqlTemplateExpression start=+${+ end=+}+ contained contains=jsTemplateExpression containedin=graphqlFold keepend
+syn cluster htmlJavaScript add=graphqlTaggedTemplate,graphqlFunctionCall
+syn cluster javaScriptEmbededExpr add=graphqlTaggedTemplate,graphqlFunctionCall
+syn cluster graphqlTaggedTemplate add=graphqlTemplateString,graphqlFunctionLiteral
 
-  syntax region graphqlTemplateString matchgroup=jsTemplateString start=+`#\s\{,4\}\(gql\|graphql\)\>\s*$+ skip=+\\\\\|\\`+ end=+`+ contains=@GraphQLSyntax,jsTemplateExpression,jsSpecial extend
+" pangloss/vim-javascript
+if hlexists('jsTemplateString')
+  if !empty(s:tags)
+    exec 'syntax region graphqlTemplateString matchgroup=jsTemplateString '
+          \ 'start=+\%(' . join(s:tags, '\|') . '\)\@20<=`+ skip=+\\`+ end=+`+ '
+          \ 'contains=@javaScriptGraphQL,jsTemplateExpression,jsSpecial extend'
+  endif
+  if !empty(s:functions)
+    exec 'syntax match graphqlFunctionCall +\%(' . join(s:functions, '\|') . '\)\ze\s*(+ '
+          \ 'nextgroup=graphqlFunctionArgs skipwhite skipnl'
+    syntax region graphqlFunctionArgs matchgroup=jsParens start=+(+ end=+)+
+          \ contains=@jsExpression,graphqlFunctionLiteral
+          \ contained extend fold
+    syntax region graphqlFunctionLiteral matchgroup=jsTemplateString
+          \ start=+`+ skip=+\\`+ end=+`+
+          \ contains=@javaScriptGraphQL,jsTemplateExpression,jsSpecial
+          \ contained extend
+  endif
+  syntax region graphqlTemplateString matchgroup=jsTemplateString
+        \ start=+`#\s\{,4\}\(gql\|graphql\)\>\s*$+ skip=+\\`+ end=+`+
+        \ contains=@javaScriptGraphQL,jsTemplateExpression,jsSpecial extend
+  syntax region graphqlTemplateExpression
+        \ start=+${+ end=+}+
+        \ contains=jsTemplateExpression contained containedin=graphqlFold
+        \ keepend
 
-  hi def link graphqlTemplateString jsTemplateString
-  hi def link graphqlTaggedTemplate jsTaggedTemplate
-  hi def link graphqlTemplateExpression jsTemplateExpression
+  " Relink the default highlights we made above to the vim-javascript groups.
+  hi! def link graphqlTemplateString jsTemplateString
+  hi! def link graphqlFunctionLiteral jsTemplateString
+  hi! def link graphqlTaggedTemplate jsTaggedTemplate
+  hi! def link graphqlFunctionCall jsFuncCall
+  hi! def link graphqlTemplateExpression jsTemplateExpression
 
-  syn cluster jsExpression add=graphqlTemplateString,graphqlTaggedTemplate
-  syn cluster graphqlTaggedTemplate add=graphqlTemplateString
-elseif graphql#has_syntax_group('javaScriptStringT')
-  " runtime/syntax/javascript.vim
-  exec 'syntax region graphqlTemplateString matchgroup=javaScriptStringT start=+' . s:tags . '\@20<=`+ skip=+\\\\\|\\`+ end=+`+ contains=@GraphQLSyntax,javaScriptSpecial,javaScriptEmbed,@htmlPreproc extend'
-  exec 'syntax match graphqlTaggedTemplate +' . s:tags . '\ze`+ nextgroup=graphqlTemplateString'
-  syntax region graphqlTemplateExpression start=+${+ end=+}+ contained contains=@javaScriptEmbededExpr containedin=graphqlFold keepend
-
-  syntax region graphqlTemplateString matchgroup=javaScriptStringT start=+`#\s\{,4\}\(gql\|graphql\)\>\s*$+ skip=+\\\\\|\\`+ end=+`+ contains=@GraphQLSyntax,javaScriptSpecial,javaScriptEmbed,@htmlPreproc extend
-
-  hi def link graphqlTemplateString javaScriptStringT
-  hi def link graphqlTaggedTemplate javaScriptEmbed
-  hi def link graphqlTemplateExpression javaScriptEmbed
-
-  syn cluster htmlJavaScript add=graphqlTaggedTemplate
-  syn cluster javaScriptEmbededExpr add=graphqlTaggedTemplate
-  syn cluster graphqlTaggedTemplate add=graphqlTemplateString
+  syn cluster jsExpression add=graphqlTemplateString,graphqlTaggedTemplate,graphqlFunctionCall
 endif

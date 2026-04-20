@@ -1,4 +1,4 @@
-" Copyright (c) 2016-2021 Jon Parise <jon@indelible.org>
+" Copyright (c) Jon Parise <jon@indelible.org>
 "
 " Permission is hereby granted, free of charge, to any person obtaining a copy
 " of this software and associated documentation files (the "Software"), to
@@ -21,23 +21,26 @@
 " Language: GraphQL
 " Maintainer: Jon Parise <jon@indelible.org>
 
-if exists('b:current_syntax')
-  let s:current_syntax = b:current_syntax
-  unlet b:current_syntax
+call graphql#embed_syntax('typescriptGraphQL')
+
+let s:tags = graphql#javascript_tags()
+let s:functions = graphql#javascript_functions()
+
+if !empty(s:tags)
+  exec 'syntax region graphqlTemplateString matchgroup=typescriptTemplate '
+        \ 'start=+\%(' . join(s:tags, '\|') . '\)\@20<=`+ skip=+\\`+ end=+`+ '
+        \ 'contains=@typescriptGraphQL,typescriptTemplateSubstitution extend'
+  exec 'syntax match graphqlTaggedTemplate +\%(' . join(s:tags, '\|') . '\)\ze`+ '
+        \ 'nextgroup=graphqlTemplateString'
 endif
-
-let b:graphql_nested_syntax = 1
-syn include @GraphQLSyntax syntax/graphql.vim
-unlet b:graphql_nested_syntax
-
-if exists('s:current_syntax')
-  let b:current_syntax = s:current_syntax
+if !empty(s:functions)
+  exec 'syntax match graphqlFunctionCall +\%(' . join(s:functions, '\|') . '\)\ze\s*(+ '
+        \ 'nextgroup=typescriptFuncCallArg skipwhite skipnl'
+  syntax region graphqlFunctionLiteral matchgroup=typescriptTemplate
+        \ start=+`+ skip=+\\`+ end=+`+
+        \ contains=@typescriptGraphQL,typescriptTemplateSubstitution
+        \ containedin=typescriptFuncCallArg contained extend
 endif
-
-let s:tags = '\%(' . join(graphql#javascript_tags(), '\|') . '\)'
-
-exec 'syntax region graphqlTemplateString matchgroup=typescriptTemplate start=+' . s:tags . '\@20<=`+ skip=+\\`+ end=+`+ contains=@GraphQLSyntax,typescriptTemplateSubstitution extend'
-exec 'syntax match graphqlTaggedTemplate +' . s:tags . '\ze`+ nextgroup=graphqlTemplateString'
 
 " Support expression interpolation ((${...})) inside template strings.
 syntax region graphqlTemplateExpression start=+${+ end=+}+ contained contains=typescriptTemplateSubstitution containedin=graphqlFold keepend
@@ -49,10 +52,12 @@ syntax region graphqlTemplateString
       \ end=+`+me=s-1
       \ containedin=typescriptTemplate
       \ contained
-      \ contains=@GraphQLSyntax,typescriptTemplateSubstitution extend
+      \ contains=@typescriptGraphQL,typescriptTemplateSubstitution extend
 
 hi def link graphqlTemplateString typescriptTemplate
+hi def link graphqlFunctionLiteral typescriptTemplate
+hi def link graphqlFunctionCall typescriptFuncName
 hi def link graphqlTemplateExpression typescriptTemplateSubstitution
 
-syn cluster typescriptExpression add=graphqlTaggedTemplate
-syn cluster graphqlTaggedTemplate add=graphqlTemplateString
+syn cluster typescriptExpression add=graphqlTaggedTemplate,graphqlFunctionCall
+syn cluster graphqlTaggedTemplate add=graphqlTemplateString,graphqlFunctionLiteral

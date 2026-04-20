@@ -1,4 +1,4 @@
-" Copyright (c) 2016-2021 Jon Parise <jon@indelible.org>
+" Copyright (c) Jon Parise <jon@indelible.org>
 "
 " Permission is hereby granted, free of charge, to any person obtaining a copy
 " of this software and associated documentation files (the "Software"), to
@@ -21,18 +21,7 @@
 " Language: GraphQL
 " Maintainer: Jon Parise <jon@indelible.org>
 
-if exists('b:current_syntax')
-  let s:current_syntax = b:current_syntax
-  unlet b:current_syntax
-endif
-
-let b:graphql_nested_syntax = 1
-syn include @GraphQLSyntax syntax/graphql.vim
-unlet b:graphql_nested_syntax
-
-if exists('s:current_syntax')
-  let b:current_syntax = s:current_syntax
-endif
+call graphql#embed_syntax('resGraphQL')
 
 syntax region graphqlExtensionPoint start=+%\(graphql\|relay\)(+ end=+)+ contains=graphqlExtensionPointS
-syntax region graphqlExtensionPointS matchgroup=String start=+`+ end=+`+ contains=@GraphQLSyntax contained
+syntax region graphqlExtensionPointS matchgroup=String start=+`+ end=+`+ contains=@resGraphQL contained

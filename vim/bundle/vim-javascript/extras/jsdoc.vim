@@ -6,7 +6,7 @@ syntax match  jsDocTags         contained "@\(alias\|api\|augments\|borrows\|cla
 " tags containing type and param
 syntax match  jsDocTags         contained "@\(arg\|argument\|cfg\|param\|property\|prop\|typedef\)\>" skipwhite nextgroup=jsDocType
 " tags containing type but no param
-syntax match  jsDocTags         contained "@\(callback\|define\|enum\|external\|implements\|this\|type\|return\|returns\)\>" skipwhite nextgroup=jsDocTypeNoParam
+syntax match  jsDocTags         contained "@\(callback\|define\|enum\|external\|implements\|this\|type\|return\|returns\|yields\)\>" skipwhite nextgroup=jsDocTypeNoParam
 " tags containing references
 syntax match  jsDocTags         contained "@\(lends\|see\|tutorial\)\>" skipwhite nextgroup=jsDocSeeTag
 " other tags (no extra syntax)
@@ -18,7 +18,8 @@ syntax region jsDocTypeRecord   contained start=/{/ end=/}/ contains=jsDocTypeRe
 syntax region jsDocTypeRecord   contained start=/\[/ end=/\]/ contains=jsDocTypeRecord extend
 syntax region jsDocTypeNoParam  contained start="{" end="}" oneline
 syntax match  jsDocTypeNoParam  contained "\%(#\|\"\|\w\|\.\|:\|\/\)\+"
-syntax match  jsDocParam        contained "\%(#\|\$\|-\|'\|\"\|{.\{-}}\|\w\|\.\|:\|\/\|\[.\{-}]\|=\)\+"
+syntax match  jsDocParam        contained "\%(#\|\$\|-\|'\|\"\|{.\{-}}\|\w\|\~\|\.\|:\|\/\|\[.\{-}]\|=\)\+"
+
 syntax region jsDocSeeTag       contained matchgroup=jsDocSeeTag start="{" end="}" contains=jsDocTags
 
 if version >= 508 || !exists("did_javascript_syn_inits")

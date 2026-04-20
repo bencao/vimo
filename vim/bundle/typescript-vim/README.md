@@ -1,9 +1,19 @@
-Typescript Syntax for Vim
+An old Typescript Syntax for Vim
 =========================
 
+---
+
+NOTE: This Typescript syntax was created before Typescript's 1.0 release, more than a decade ago. I hope it 
+has been helpful but there are now other options available. Vim has included 
+[Typescript syntax](https://github.com/vim/vim/blob/master/runtime/syntax/typescript.vim) for some years,
+which receives more frequent updates at its own [repository](https://github.com/HerringtonDarkholme/yats.vim).
+Neovim can also use a [treesitter grammar](https://github.com/tree-sitter/tree-sitter-typescript) for highlighting.
+
+---
+
 Syntax file and other settings for [TypeScript](http://typescriptlang.org). The
-syntax file is taken from this [blog
-post](http://blogs.msdn.com/b/interoperability/archive/2012/10/01/sublime-text-vi-emacs-typescript-enabled.aspx).
+syntax file was originally from this 2012 [blog
+post](https://docs.microsoft.com/en-us/archive/blogs/interoperability/sublime-text-vi-emacs-typescript-enabled).
 
 Checkout [Tsuquyomi](https://github.com/Quramy/tsuquyomi) for omni-completion
 and other features for TypeScript editing.
@@ -11,7 +21,17 @@ and other features for TypeScript editing.
 Install
 -------
 
-The simplest way to install is via a Vim add-in manager such as
+From Vim 8 onward, the plugin can be installed as simply as (Unix/Mac):
+```
+git clone https://github.com/leafgarland/typescript-vim.git ~/.vim/pack/typescript/start/typescript-vim
+```
+
+On Windows/Powershell, use the following:
+```
+git clone https://github.com/leafgarland/typescript-vim.git $home/vimfiles/pack/typescript/start/typescript-vim
+```
+
+For older versions of Vim, the simplest way to install is via a Vim add-in manager such as
 [Plug](https://github.com/junegunn/vim-plug),
 [Vundle](https://github.com/gmarik/vundle) or
 [Pathogen](https://github.com/tpope/vim-pathogen/).

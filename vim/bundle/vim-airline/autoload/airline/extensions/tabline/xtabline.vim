@@ -1,7 +1,11 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " xTabline - Reduced version for vim-airline
-" Copyright (C) 2018 Gianmaria Bajo <mg1979.git@gmail.com>
-" License: MIT License
+" Plugin: https://github.com/mg979/vim-xtabline
+" MIT License Copyright (C) 2018-2021 Gianmaria Bajo <mg1979.git@gmail.com>
+" tabpagecd:
+" expanded version by mg979
+" MIT License Copyright (C) 2012-2013 Kana Natsuno <http://whileimautomaton.net/>
+" MIT License Copyright (C) 2018-2021 Gianmaria Bajo <mg1979.git@gmail.com>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 
@@ -40,7 +44,7 @@ function! airline#extensions#tabline#xtabline#init()
         autocmd TabLeave  * call s:Do('leave')
         autocmd TabClosed * call s:Do('close')
 
-        autocmd BufEnter  * let g:xtabline_changing_buffer = 0
+        autocmd BufEnter  * if exists('#airline') | let g:xtabline_changing_buffer = 0 | endif
         autocmd BufAdd,BufDelete,BufWrite * call airline#extensions#tabline#xtabline#filter_buffers()
     augroup END
 
@@ -176,6 +180,10 @@ function! airline#extensions#tabline#xtabline#filter_buffers()
     " 'accepted' is a list of buffer numbers, for quick access.
     " 'excluded' is a list of buffer numbers, it will be used by Airline to hide buffers.
 
+    if !exists('#airline')
+      " airline disabled
+      return
+    endif
     if !s:xtabline_filtering | return | endif
 
     let g:airline#extensions#tabline#exclude_buffers = []
@@ -318,11 +326,6 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " tabpagecd - Turn :cd into :tabpagecd, to use one tab page per project
-" expanded version by mg979
-" Copyright (C) 2012-2013 Kana Natsuno <http://whileimautomaton.net/>
-" Copyright (C) 2018 Gianmaria Bajo <mg1979.git@gmail.com>
-" License: MIT License
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:InitCwds()
@@ -352,6 +355,10 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:Do(action)
+    if !exists('#airline')
+      " airline disabled
+      return
+    endif
     let arg = a:action
     if !s:state | call s:InitCwds() | return | endif
 

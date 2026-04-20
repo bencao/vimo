@@ -10,22 +10,41 @@ on:
       - master
 
 jobs:
-  checks:
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+      - uses: actions/checkout@v6
+      - uses: raven-actions/actionlint@v2
+      - uses: actions/setup-python@v6
         with:
-          python-version: 3.8
-      - name: Install vim
-        run: |
-          sudo add-apt-repository ppa:jonathonf/vim
-          sudo apt install vim
-      - name: Run lint
-        run: |
-          pip install vim-vint==0.3.21
-          make lint
-      - name: Run tests
-        run: make test
+          python-version: '3.13'
+      - uses: rhysd/action-setup-vim@v1
+        id: vim
+      - run: make install-vint lint
+        env:
+          VIM_EXE: ${{ steps.vim.outputs.executable }}
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        vim:
+          - version: stable
+            neovim: false
+          - version: v8.2.0000
+            neovim: false
+          - version: stable
+            neovim: true
+
+    name: "test (${{ matrix.vim.neovim && 'neovim' || 'vim' }} ${{ matrix.vim.version }})"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: rhysd/action-setup-vim@v1
+        id: vim
+        with:
+          neovim: ${{ matrix.vim.neovim }}
+          version: ${{ matrix.vim.version }}
+      - run: make test
+        env:
+          VIM_EXE: ${{ steps.vim.outputs.executable }}

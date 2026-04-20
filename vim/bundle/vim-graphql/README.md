@@ -1,13 +1,18 @@
 # GraphQL for Vim
 
-This Vim plugin provides [GraphQL](https://graphql.org/) file detection,
-syntax highlighting, and indentation. It currently targets the [June 2018
-edition](https://graphql.github.io/graphql-spec/June2018/) of the GraphQL
-specification.
+This Vim plugin provides [GraphQL](https://graphql.org/) file detection, syntax
+highlighting, and indentation. It currently targets the [September 2025
+Edition](https://spec.graphql.org/September2025/) of the GraphQL specification.
+
+The core runtime files are also included with Vim 9.1.0955+. They provide the
+foundational support (ftplugin, indent, syntax) for the `graphql` filetype.
+This plugin includes the most up-to-date version of those runtime files as well
+as support for embedding GraphQL syntax inside of other filetype buffers (such
+as JavaScript).
 
 ## Installation
 
-This plugin requires Vim version 8 or later. Equivalent Neovim versions
+This plugin requires Vim version 8.2 or later. Equivalent Neovim versions
 are also supported.
 
 ### Using [vim-plug](https://github.com/junegunn/vim-plug)
@@ -26,9 +31,9 @@ vim -u NONE -c "helptags graphql/doc" -c q
 
 ## Syntax Highlighting
 
-Complete syntax highlighting is enable for the `graphql` [filetype][]. This
-filetype is automatically selected for filenames ending in `.graphql`,
-`.graphqls`, and `.gql`.
+Complete syntax highlighting is enabled for the `graphql` [filetype][]. This
+filetype is automatically selected for filenames ending in `.gql`, `.graphql`,
+and `.graphqls`.
 
 If you would like to enable automatic syntax support for more file extensions
 (e.g., `*.prisma`), create a file named `~/.vim/after/ftdetect/graphql.vim`
@@ -66,7 +71,24 @@ const query = gql`
 ```
 
 The list of recognized tag names is defined by the `g:graphql_javascript_tags`
-variable, which defaults to `["gql", "graphql", "Relay.QL"]`.
+variable, which defaults to `["gql", "graphql", "Relay.QL"]`. This can also
+be set on a per-buffer basis using the `b:graphql_javascript_tags` variable.
+
+Untagged template literals passed as the first argument to specific functions
+can also be recognized. `g:graphql_javascript_functions` defines this list of
+functions, which defaults to `["graphql"]`. This list can also be set on a
+per-buffer basis using the `b:graphql_javascript_functions` variable.
+
+```javascript
+const query = graphql(`
+  {
+    user(id: ${uid}) {
+      firstName
+      lastName
+    }
+  }
+`);
+```
 
 You can also add a `# gql` or `# graphql` comment at the start of a template
 string to indicate that its contents should be considered GraphQL syntax.
@@ -152,10 +174,11 @@ GQL;
 ## Language Server Protocol Support
 
 [Language Server Protocol (LSP)](https://langserver.org/) implementations can
-enable editor features like schema-aware completion.
+enable editor features like schema-aware completion. This plugin does not
+implement the Language Server Protocol, but here are some others that do:
 
 - [coc.nvim](https://github.com/neoclide/coc.nvim) supports
-  [GraphQL languge servers](https://github.com/neoclide/coc.nvim/wiki/Language-servers#graphql)
+  [GraphQL language servers](https://github.com/neoclide/coc.nvim/wiki/Language-servers#graphql)
 
 ## Testing
 

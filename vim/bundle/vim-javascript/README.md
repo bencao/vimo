@@ -6,6 +6,12 @@ improved indentation.
 
 ## Installation
 
+### Install with native package manager
+
+      git clone https://github.com/pangloss/vim-javascript.git ~/.vim/pack/vim-javascript/start/vim-javascript
+
+since Vim 8.
+
 ### Install with [pathogen](https://github.com/tpope/vim-pathogen)
 
       git clone https://github.com/pangloss/vim-javascript.git ~/.vim/bundle/vim-javascript
@@ -60,7 +66,9 @@ augroup END
 
 Enables code folding for javascript based on our syntax file.
 
-Please note this can have a dramatic effect on performance.
+Please note this can have a dramatic effect on performance. In some terminals
+this may cause hangs during pasting. If you are affected by this, using
+a different foldmethod (such as indent) may provide a better experience.
 
 
 ## Concealing Characters

@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2018 Bailey Ling et al.
+" MIT License. Copyright (c) 2013-2021 Bailey Ling et al.
 " vim: et ts=2 sts=2 sw=2
 
 scriptencoding utf-8
@@ -71,7 +71,7 @@ endfunction
 
 " Compute the change in size of the tabline caused by separators
 "
-" This should be kept up-to-date with |s:get_transitioned_seperator| and
+" This should be kept up-to-date with |s:get_transitioned_separator| and
 " |s:get_separator| in autoload/airline/builder.vim
 function! s:get_separator_change_with_end(new_group, old_group, new_end_group, old_end_group, sep_size, alt_sep_size)
   let sep_change = 0

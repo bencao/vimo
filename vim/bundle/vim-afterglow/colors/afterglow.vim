@@ -1,5 +1,5 @@
 " File: afterglow.vim
-" Author: Danilo Augusto <daniloaugusto.ita16@gmail.com>
+" Author: Danilo Augusto
 " Date: 2017-02-27
 " Vim color file - Afterglow (monokai version)
 "
@@ -231,15 +231,42 @@ if has("gui_running") || &t_Co == 88 || &t_Co == 256
     " Sets the highlighting for the given group
     fun <SID>X(group, fg, bg, attr)
         if a:fg != ""
-            exec "hi " . a:group . " guifg=#" . a:fg . " ctermfg=" . <SID>rgb(a:fg)
+            if a:fg == "NONE"
+                exec "hi " . a:group . " guifg=NONE ctermfg=NONE"
+            else
+                exec "hi " . a:group . " guifg=#" . a:fg . " ctermfg=" . <SID>rgb(a:fg)
+            endif
         endif
         if a:bg != ""
-            exec "hi " . a:group . " guibg=#" . a:bg . " ctermbg=" . <SID>rgb(a:bg)
+            if a:bg == "NONE"
+                exec "hi " . a:group . " guibg=NONE ctermbg=NONE"
+            else
+                exec "hi " . a:group . " guibg=#" . a:bg . " ctermbg=" . <SID>rgb(a:bg)
+            endif
         endif
         if a:attr != ""
             exec "hi " . a:group . " gui=" . a:attr . " cterm=" . a:attr
         endif
     endfun
+
+    " by default: toggled on (backcompatibility with g:afterglow_italic_comments)
+    " option g:afterglow_use_italics
+    if exists("g:afterglow_use_italics") && !g:afterglow_use_italics
+        let italic = ""
+    else
+        " make the global variable available to command mode
+        let g:afterglow_use_italics = 1
+        let italic = "italic"
+    endif
+
+    " option g:afterglow_italic_comments
+    if exists("g:afterglow_italic_comments") && g:afterglow_italic_comments
+        call <SID>X("Comment", s:comment, "", italic)
+    else
+        " make the global variable available to command mode
+        let g:afterglow_italic_comments = 0
+        call <SID>X("Comment", s:comment, "", "")
+    endif
 
     " Vim Highlighting
     call <SID>X("NonText", s:selection, "", "")
@@ -249,7 +276,7 @@ if has("gui_running") || &t_Co == 88 || &t_Co == 256
     call <SID>X("TabLineFill", s:window, s:foreground, "reverse")
     call <SID>X("StatusLine", s:window, s:yellow, "reverse")
     call <SID>X("StatusLineNC", s:window, s:foreground, "reverse")
-    call <SID>X("VertSplit", s:window, s:window, "none")
+    call <SID>X("VertSplit", s:window, s:window, "NONE")
     call <SID>X("Visual", "", s:selection, "")
     call <SID>X("Directory", s:blue, "", "")
     call <SID>X("ModeMsg", s:green, "", "")
@@ -260,14 +287,14 @@ if has("gui_running") || &t_Co == 88 || &t_Co == 256
     call <SID>X("Folded", s:comment, s:background, "")
     call <SID>X("FoldColumn", "", s:background, "")
     if version >= 700
-        call <SID>X("CursorLine", "", s:line, "none")
-        call <SID>X("CursorLineNR", s:orange, "", "none")
-        call <SID>X("CursorColumn", "", s:line, "none")
-        call <SID>X("PMenu", s:foreground, s:selection, "none")
+        call <SID>X("CursorLine", "", s:line, "NONE")
+        call <SID>X("CursorLineNR", s:orange, "", "NONE")
+        call <SID>X("CursorColumn", "", s:line, "NONE")
+        call <SID>X("PMenu", s:foreground, s:selection, "NONE")
         call <SID>X("PMenuSel", s:foreground, s:selection, "reverse")
     end
     if version >= 703
-        call <SID>X("ColorColumn", "", s:line, "none")
+        call <SID>X("ColorColumn", "", s:line, "NONE")
     end
 
     " Standard Highlighting
@@ -291,10 +318,10 @@ if has("gui_running") || &t_Co == 88 || &t_Co == 256
     call <SID>X("Underlined", s:orange, "", "underline")
 
     syntax match commonOperator "\(+\|=\|-\|*\|\^\|\/\||\)"
-    hi link commonOperator Operator
+    hi! link commonOperator Operator
 
     " Vim Highlighting
-    call <SID>X("vimCommand", s:wine, "", "none")
+    call <SID>X("vimCommand", s:wine, "", "NONE")
 
     " C Highlighting
     call <SID>X("cType", s:wine, "", "")
@@ -341,12 +368,12 @@ if has("gui_running") || &t_Co == 88 || &t_Co == 256
     call <SID>X("crystalException", s:wine, "", "")
 
     " Python Highlighting
-    call <SID>X("pythonInclude", s:green, "", "italic")
+    call <SID>X("pythonInclude", s:green, "", italic)
     call <SID>X("pythonStatement", s:blue, "", "")
     call <SID>X("pythonConditional", s:wine, "", "")
     call <SID>X("pythonRepeat", s:wine, "", "")
     call <SID>X("pythonException", s:orange, "", "")
-    call <SID>X("pythonFunction", s:green, "", "italic")
+    call <SID>X("pythonFunction", s:green, "", italic)
     call <SID>X("pythonPreCondit", s:wine, "", "")
     call <SID>X("pythonExClass", s:orange, "", "")
     call <SID>X("pythonBuiltin", s:blue, "", "")
@@ -401,13 +428,13 @@ if has("gui_running") || &t_Co == 88 || &t_Co == 256
 
     " LaTeX
     call <SID>X("texStatement",s:blue, "", "")
-    call <SID>X("texMath", s:wine, "", "none")
-    call <SID>X("texMathMacher", s:yellow, "", "none")
-    call <SID>X("texRefLabel", s:wine, "", "none")
-    call <SID>X("texRefZone", s:blue, "", "none")
-    call <SID>X("texComment", s:comment, "", "none")
-    call <SID>X("texDelimiter", s:purple, "", "none")
-    call <SID>X("texMathZoneX", s:purple, "", "none")
+    call <SID>X("texMath", s:wine, "", "NONE")
+    call <SID>X("texMathMacher", s:yellow, "", "NONE")
+    call <SID>X("texRefLabel", s:wine, "", "NONE")
+    call <SID>X("texRefZone", s:blue, "", "NONE")
+    call <SID>X("texComment", s:comment, "", "NONE")
+    call <SID>X("texDelimiter", s:purple, "", "NONE")
+    call <SID>X("texMathZoneX", s:purple, "", "NONE")
 
     " CoffeeScript Highlighting
     call <SID>X("coffeeRepeat", s:wine, "", "")
@@ -419,7 +446,7 @@ if has("gui_running") || &t_Co == 88 || &t_Co == 256
     call <SID>X("htmlTag", s:blue, "", "")
     call <SID>X("htmlEndTag", s:blue, "", "")
     call <SID>X("htmlTagName", s:wine, "", "bold")
-    call <SID>X("htmlArg", s:green, "", "italic")
+    call <SID>X("htmlArg", s:green, "", italic)
     call <SID>X("htmlScriptTag", s:wine, "", "")
 
     " Diff Highlighting
@@ -429,10 +456,10 @@ if has("gui_running") || &t_Co == 88 || &t_Co == 256
     call <SID>X("diffText", s:line, s:blue, "")
 
     " ShowMarks Highlighting
-    call <SID>X("ShowMarksHLl", s:orange, s:background, "none")
-    call <SID>X("ShowMarksHLo", s:wine, s:background, "none")
-    call <SID>X("ShowMarksHLu", s:yellow, s:background, "none")
-    call <SID>X("ShowMarksHLm", s:wine, s:background, "none")
+    call <SID>X("ShowMarksHLl", s:orange, s:background, "NONE")
+    call <SID>X("ShowMarksHLo", s:wine, s:background, "NONE")
+    call <SID>X("ShowMarksHLu", s:yellow, s:background, "NONE")
+    call <SID>X("ShowMarksHLm", s:wine, s:background, "NONE")
 
     " Lua Highlighting
     call <SID>X("luaStatement", s:wine, "", "")
@@ -528,36 +555,65 @@ if has("gui_running") || &t_Co == 88 || &t_Co == 256
     call <SID>X("scalaBackTick", s:blue, "", "")
 
     " Git
-    call <SID>X("diffAdded", s:green, "", "")
-    call <SID>X("diffRemoved", s:red, "", "")
+    call <SID>X("gitFile", s:orange, "", "")
     call <SID>X("gitcommitSummary", "", "", "bold")
-
 
     " Option g:afterglow_blackout
     if !exists( "g:afterglow_blackout")
         let g:afterglow_blackout = 0
     endif
-    if g:afterglow_blackout
+
+    " Option g:afterglow_no_terminal_background
+    if !exists("g:afterglow_inherit_background")
+        let g:afterglow_inherit_background = 0
+    endif
+
+    " Background behavior inference here
+    if g:afterglow_inherit_background && has("gui_running")
+        echohl WarningMsg | echom "Inherit background is ignored in GUI." | echohl NONE
+        let g:afterglow_inherit_background = 0
+    endif
+
+    if g:afterglow_inherit_background
+        let s:chosen_background = "NONE"
+    elseif g:afterglow_blackout
         let s:chosen_background = s:black
     else
         let s:chosen_background = s:background
     endif
+
     " Settings dependent on g:afterglow_blackout
     call <SID>X("Normal", s:foreground, s:chosen_background, "")
     call <SID>X("LineNr", s:comment, s:chosen_background, "")
     if version >= 700
-        call <SID>X("SignColumn", "", s:chosen_background, "none")
+        call <SID>X("SignColumn", "", s:chosen_background, "NONE")
     end
     call <SID>X("Todo", s:red, s:chosen_background, "bold")
 
-    " Option g:afterglow_italic_comments
-    if exists( "g:afterglow_italic_comments") && g:afterglow_italic_comments
-        call <SID>X("Comment", s:comment, "", "italic")
-    else
-        " make the global variable available to command mode
-        let g:afterglow_italic_comments = 0
-        call <SID>X("Comment", s:comment, "", "")
-    endif
+    " Diffs
+    " Plugin GitGutter uses highlight link to some of the groups below
+    call <SID>X("DiffAdded", s:green, s:chosen_background, "")
+    call <SID>X("DiffChange", s:yellow, s:chosen_background, "")
+    call <SID>X("DiffDelete", s:red, s:chosen_background, "")
+    call <SID>X("DiffLine", s:blue, s:chosen_background, italic)
+    call <SID>X("DiffSubname", s:foreground, s:chosen_background, "")
+    " Aliases
+    " For plugins compatibility and some backcompatibility
+    " cf. https://github.com/vim/vim-history/blob/c2257f84a000fd08d3ba80d6b1a5d1c0148a39ea/runtime/syntax/diff.vim#L13
+    hi! link diffAdded DiffAdded
+    hi! link diffChange DiffChange
+    hi! link diffDelete DiffDelete
+    hi! link diffLine DiffLine
+    hi! link diffSubname DiffSubname
+    hi! link DiffRemoved DiffDelete
+    hi! link diffRemoved DiffDelete
+    hi! link GitGutterChangeLineDefault DiffDelete
+    hi! link DiffAdd DiffAdded
+    hi! link diffAdd DiffAdded
+
+    " ALE (plugin)
+    call <SID>X("ALEWarningSign", s:orange, s:chosen_background, "bold")
+    call <SID>X("ALEErrorSign", s:red, s:chosen_background, "bold")
 
     " Delete Functions
     delf <SID>X

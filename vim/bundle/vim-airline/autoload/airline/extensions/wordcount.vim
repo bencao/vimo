@@ -1,4 +1,4 @@
-" MIT License. Copyright (c) 2013-2018 Bailey Ling et al.
+" MIT License. Copyright (c) 2013-2021 Bailey Ling et al.
 " vim: et ts=2 sts=2 sw=2 fdm=marker
 
 scriptencoding utf-8
@@ -6,8 +6,21 @@ scriptencoding utf-8
 " get wordcount {{{1
 if exists('*wordcount')
   function! s:get_wordcount(visual_mode_active)
-    let query = a:visual_mode_active ? 'visual_words' : 'words'
-    return get(wordcount(), query, 0)
+    if get(g:, 'actual_curbuf', '') != bufnr('')
+      return
+    endif
+    if &filetype ==# 'tex' && exists('b:vimtex') && get(g:, 'airline#extensions#vimtex#wordcount', 0)
+      " We're in a TeX file and vimtex is a plugin, so use vimtex's wordcount...
+      if a:visual_mode_active
+        " not useful? 
+        return
+      else
+        return vimtex#misc#wordcount()
+      endif
+    else
+      let query = a:visual_mode_active ? 'visual_words' : 'words'
+      return get(wordcount(), query, 0)
+    endif
   endfunction
 else  " Pull wordcount from the g_ctrl-g stats
   function! s:get_wordcount(visual_mode_active)
@@ -41,7 +54,7 @@ endfunction
 " check user-defined formatter exists with appropriate functions, otherwise
 " fall back to default
 if s:formatter !=# 'default'
-  execute 'runtime! autoload/airline/extensions/wordcount/formatters/'.s:formatter
+  execute 'runtime! autoload/airline/extensions/wordcount/formatters/'.s:formatter.'.vim'
   if !exists('*airline#extensions#wordcount#formatters#{s:formatter}#to_string')
     if !exists('*airline#extensions#wordcount#formatters#{s:formatter}#format')
       let s:formatter = 'default'
@@ -68,32 +81,34 @@ function! s:update_wordcount(force_update)
   endif
 endfunction
 
-let s:visual_active = 0  " Boolean: for when to get visual wordcount
 function airline#extensions#wordcount#get()
-  if s:visual_active
+  if get(g:, 'airline#visual_active', 0)
     return s:format_wordcount(s:get_wordcount(1))
   else
-    if b:airline_changedtick != b:changedtick
+    if get(b:, 'airline_changedtick', 0) != b:changedtick
       call s:update_wordcount(0)
       let b:airline_changedtick = b:changedtick
     endif
-    return b:airline_wordcount
+    return get(b:, 'airline_wordcount', '')
   endif
 endfunction
 
 " airline functions {{{1
 " default filetypes:
-let s:filetypes = ['help', 'markdown', 'rst', 'org', 'text', 'asciidoc', 'tex', 'mail']
 function! airline#extensions#wordcount#apply(...)
-  let filetypes = get(g:, 'airline#extensions#wordcount#filetypes', s:filetypes)
+  let filetypes = get(g:, 'airline#extensions#wordcount#filetypes',
+    \ ['asciidoc', 'help', 'mail', 'markdown', 'rmd', 'nroff', 'org', 'rst', 'plaintex', 'tex', 'text'])
+  " export current filetypes settings to global namespace
+  let g:airline#extensions#wordcount#filetypes = filetypes
 
   " Check if filetype needs testing
-  if did_filetype() || filetypes isnot s:filetypes
-    let s:filetypes = filetypes
+  if did_filetype()
+    " correctly test for compound filetypes (e.g. markdown.pandoc)
+    let ft = substitute(&filetype, '\.', '\\|', 'g')
 
     " Select test based on type of "filetypes": new=list, old=string
     if type(filetypes) == get(v:, 't_list', type([]))
-          \ ? index(filetypes, &filetype) > -1 || index(filetypes, 'all') > -1
+          \ ? match(filetypes, '\<'. ft. '\>') > -1 || index(filetypes, 'all') > -1
           \ : match(&filetype, filetypes) > -1
       let b:airline_changedtick = -1
       call s:update_wordcount(1) " force update: ensures initial worcount exists
@@ -109,9 +124,5 @@ function! airline#extensions#wordcount#apply(...)
 endfunction
 
 function! airline#extensions#wordcount#init(ext)
-  augroup airline_wordcount
-    autocmd! User AirlineModeChanged nested
-          \ let s:visual_active = (mode() ==? 'v' || mode() ==? 's')
-  augroup END
   call a:ext.add_statusline_func('airline#extensions#wordcount#apply')
 endfunction

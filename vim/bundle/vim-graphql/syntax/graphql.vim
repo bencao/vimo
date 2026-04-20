@@ -1,4 +1,4 @@
-" Copyright (c) 2016-2021 Jon Parise <jon@indelible.org>
+" Copyright (c) Jon Parise <jon@indelible.org>
 "
 " Permission is hereby granted, free of charge, to any person obtaining a copy
 " of this software and associated documentation files (the "Software"), to
@@ -21,8 +21,11 @@
 " Language: GraphQL
 " Maintainer: Jon Parise <jon@indelible.org>
 
-if exists('b:current_syntax')
-  finish
+if !exists('main_syntax')
+  if exists('b:current_syntax')
+    finish
+  endif
+  let main_syntax = 'graphql'
 endif
 
 syn case match
@@ -38,9 +41,15 @@ syn match graphqlOperator   "\M..." display
 syn keyword graphqlBoolean  true false
 syn keyword graphqlNull     null
 syn match   graphqlNumber   "-\=\<\%(0\|[1-9]\d*\)\%(\.\d\+\)\=\%([eE][-+]\=\d\+\)\=\>" display
-syn region  graphqlString   start=+"+  skip=+\\\\\|\\"+  end=+"\|$+
-syn region  graphqlString   start=+"""+ skip=+\\"""+ end=+"""+
+syn region  graphqlString   start=+"+  skip=+\\\\\|\\"+  end=+"\|$+  contains=graphqlEscape
+syn region  graphqlString   start=+"""+ skip=+\\"""+ end=+"""+  contains=graphqlEscape
 
+syn match   graphqlEscape   +\\["\\/bfnrt]+ contained display
+syn match   graphqlEscape   +\\u\x\{4}+     contained display
+syn match   graphqlEscape   +\\u{\x\+}+     contained display
+syn match   graphqlEscape   +\\""\"+        contained display
+
+syn keyword graphqlKeyword repeatable nextgroup=graphqlKeyword skipwhite
 syn keyword graphqlKeyword on nextgroup=graphqlType,graphqlDirectiveLocation skipwhite
 
 syn keyword graphqlStructure enum scalar type union nextgroup=graphqlType skipwhite
@@ -56,11 +65,11 @@ syn match graphqlVariable   "\<\$\h\w*\>"  display
 syn match graphqlName       "\<\h\w*\>"    display
 syn match graphqlType       "\<_*\u\w*\>"  display
 
-" https://graphql.github.io/graphql-spec/June2018/#ExecutableDirectiveLocation
+" https://spec.graphql.org/September2025/#ExecutableDirectiveLocation
 syn keyword graphqlDirectiveLocation QUERY MUTATION SUBSCRIPTION FIELD
 syn keyword graphqlDirectiveLocation FRAGMENT_DEFINITION FRAGMENT_SPREAD
-syn keyword graphqlDirectiveLocation INLINE_FRAGMENT
-" https://graphql.github.io/graphql-spec/June2018/#TypeSystemDirectiveLocation
+syn keyword graphqlDirectiveLocation INLINE_FRAGMENT VARIABLE_DEFINITION
+" https://spec.graphql.org/September2025/#TypeSystemDirectiveLocation
 syn keyword graphqlDirectiveLocation SCHEMA SCALAR OBJECT FIELD_DEFINITION
 syn keyword graphqlDirectiveLocation ARGUMENT_DEFINITION INTERFACE UNION
 syn keyword graphqlDirectiveLocation ENUM ENUM_VALUE INPUT_OBJECT
@@ -71,6 +80,10 @@ syn keyword graphqlMetaFields __schema __type __typename
 syn region  graphqlFold matchgroup=graphqlBraces start="{" end="}" transparent fold contains=ALLBUT,graphqlStructure
 syn region  graphqlList matchgroup=graphqlBraces start="\[" end="]" transparent contains=ALLBUT,graphqlDirective,graphqlStructure
 
+if main_syntax ==# 'graphql'
+  syn sync minlines=500
+endif
+
 hi def link graphqlComment          Comment
 hi def link graphqlOperator         Operator
 
@@ -80,6 +93,7 @@ hi def link graphqlBoolean          Boolean
 hi def link graphqlNull             Keyword
 hi def link graphqlNumber           Number
 hi def link graphqlString           String
+hi def link graphqlEscape           Special
 
 hi def link graphqlDirective        PreProc
 hi def link graphqlDirectiveLocation Special
@@ -90,8 +104,8 @@ hi def link graphqlStructure        Structure
 hi def link graphqlType             Type
 hi def link graphqlVariable         Identifier
 
-if !get(b:, 'graphql_nested_syntax')
-    syn sync minlines=500
-endif
-
 let b:current_syntax = 'graphql'
+
+if main_syntax ==# 'graphql'
+  unlet main_syntax
+endif

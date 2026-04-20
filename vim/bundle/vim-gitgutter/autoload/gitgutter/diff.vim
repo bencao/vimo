@@ -1,25 +1,14 @@
+scriptencoding utf8
+
 let s:nomodeline = (v:version > 703 || (v:version == 703 && has('patch442'))) ? '<nomodeline>' : ''
 
 let s:hunk_re = '^@@ -\(\d\+\),\?\(\d*\) +\(\d\+\),\?\(\d*\) @@'
-
-" True for git v1.7.2+.
-function! s:git_supports_command_line_config_override() abort
-  call system(g:gitgutter_git_executable.' -c foo.bar=baz --version')
-  return !v:shell_error
-endfunction
-
-let s:c_flag = s:git_supports_command_line_config_override()
-
 
 let s:temp_from = tempname()
 let s:temp_buffer = tempname()
 let s:counter = 0
 
 " Returns a diff of the buffer against the index or the working tree.
-"
-" After running the diff we pass it through grep where available to reduce
-" subsequent processing by the plugin.  If grep is not available the plugin
-" does the filtering instead.
 "
 " When diffing against the index:
 "
@@ -62,18 +51,19 @@ let s:counter = 0
 "
 " Arguments:
 "
-" bufnr              - the number of the buffer to be diffed
-" from               - 'index' or 'working_tree'; what the buffer is diffed against
-" preserve_full_diff - truthy to return the full diff or falsey to return only
-"                      the hunk headers (@@ -x,y +m,n @@); only possible if
-"                      grep is available.
-function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
-  while gitgutter#utility#repo_path(a:bufnr, 0) == -1
-    sleep 5m
-  endwhile
+" bufnr - the number of the buffer to be diffed
+" from  - 'index' or 'working_tree'; what the buffer is diffed against
+function! gitgutter#diff#run_diff(bufnr, from) abort
+  if gitgutter#utility#repo_path(a:bufnr, 0) == -1
+    throw 'gitgutter path not set'
+  endif
 
   if gitgutter#utility#repo_path(a:bufnr, 0) == -2
     throw 'gitgutter not tracked'
+  endif
+
+  if gitgutter#utility#repo_path(a:bufnr, 0) == -3
+    throw 'gitgutter assume unchanged'
   endif
 
   " Wrap compound commands in parentheses to make Windows happy.
@@ -118,36 +108,30 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     endif
 
     " Write file from index to temporary file.
-    let index_name = g:gitgutter_diff_base.':'.gitgutter#utility#repo_path(a:bufnr, 1)
-    let cmd .= g:gitgutter_git_executable.' --no-pager show '.index_name.' > '.from_file.' && '
+    let index_name = gitgutter#utility#get_diff_base(a:bufnr).':'.gitgutter#utility#base_path(a:bufnr)
+    let cmd .= gitgutter#git(a:bufnr).' --no-pager show --textconv '.index_name
+    let cmd .= ' > '.gitgutter#utility#shellescape(from_file).' || exit 0) && ('
 
   elseif a:from ==# 'working_tree'
     let from_file = gitgutter#utility#repo_path(a:bufnr, 1)
   endif
 
   " Call git-diff.
-  let cmd .= g:gitgutter_git_executable.' --no-pager '.g:gitgutter_git_args
-  if s:c_flag
+  let cmd .= gitgutter#git(a:bufnr).' --no-pager'
+  if gitgutter#utility#git_supports_command_line_config_override()
     let cmd .= ' -c "diff.autorefreshindex=0"'
     let cmd .= ' -c "diff.noprefix=false"'
     let cmd .= ' -c "core.safecrlf=false"'
   endif
-  let cmd .= ' diff --no-ext-diff --no-color -U0 '.g:gitgutter_diff_args.' -- '.from_file.' '.buff_file
+  let cmd .= ' diff --no-ext-diff --no-color -U0 '.g:gitgutter_diff_args
+  let cmd .= ' -- '.gitgutter#utility#shellescape(from_file).' '.gitgutter#utility#shellescape(buff_file)
 
-  " Pipe git-diff output into grep.
-  if !a:preserve_full_diff && !empty(g:gitgutter_grep)
-    let cmd .= ' | '.g:gitgutter_grep.' '.gitgutter#utility#shellescape('^@@ ')
-  endif
-
-  " grep exits with 1 when no matches are found; git-diff exits with 1 when
-  " differences are found.  However we want to treat non-matches and
-  " differences as non-erroneous behaviour; so we OR the command with one
+  " git-diff exits with 1 when differences are found but we want to treat
+  " differences as non-erroneous behaviour.  So we OR the command with one
   " which always exits with success (0).
   let cmd .= ' || exit 0'
 
   let cmd .= ')'
-
-  let cmd = gitgutter#utility#cd_cmd(a:bufnr, cmd)
 
   if g:gitgutter_async && gitgutter#async#available()
     call gitgutter#async#execute(cmd, a:bufnr, {
@@ -157,9 +141,9 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     return 'async'
 
   else
-    let diff = gitgutter#utility#system(cmd)
+    let [diff, error_code] = gitgutter#utility#system(cmd)
 
-    if v:shell_error
+    if error_code
       call gitgutter#debug#log(diff)
       throw 'gitgutter diff failed'
     endif
@@ -180,14 +164,14 @@ function! gitgutter#diff#handler(bufnr, diff) abort
   let modified_lines = gitgutter#diff#process_hunks(a:bufnr, gitgutter#hunk#hunks(a:bufnr))
 
   let signs_count = len(modified_lines)
-  if signs_count > g:gitgutter_max_signs
+  if g:gitgutter_max_signs != -1 && signs_count > g:gitgutter_max_signs
     call gitgutter#utility#warn_once(a:bufnr, printf(
           \ 'exceeded maximum number of signs (%d > %d, configured by g:gitgutter_max_signs).',
           \ signs_count, g:gitgutter_max_signs), 'max_signs')
     call gitgutter#sign#clear_signs(a:bufnr)
 
   else
-    if g:gitgutter_signs || g:gitgutter_highlight_lines
+    if g:gitgutter_signs || g:gitgutter_highlight_lines || g:gitgutter_highlight_linenrs
       call gitgutter#sign#update_signs(a:bufnr, modified_lines)
     endif
   endif
@@ -374,8 +358,25 @@ endfunction
 function! s:write_buffer(bufnr, file)
   let bufcontents = getbufline(a:bufnr, 1, '$')
 
+  if bufcontents == [''] && line2byte(1) == -1
+    " Special case: completely empty buffer.
+    " A nearly empty buffer of only a newline has line2byte(1) == 1.
+    call writefile([], a:file)
+    return
+  endif
+
   if getbufvar(a:bufnr, '&fileformat') ==# 'dos'
-    call map(bufcontents, 'v:val."\r"')
+    if getbufvar(a:bufnr, '&endofline')
+      call map(bufcontents, 'v:val."\r"')
+    else
+      for i in range(len(bufcontents) - 1)
+        let bufcontents[i] = bufcontents[i] . "\r"
+      endfor
+    endif
+  endif
+
+  if getbufvar(a:bufnr, '&endofline')
+    call add(bufcontents, '')
   endif
 
   let fenc = getbufvar(a:bufnr, '&fileencoding')
@@ -387,12 +388,19 @@ function! s:write_buffer(bufnr, file)
     let bufcontents[0]='﻿'.bufcontents[0]
   endif
 
-  call writefile(bufcontents, a:file)
+  " The file we are writing to is a temporary file.  Sometimes the parent
+  " directory is deleted outside Vim but, because Vim caches the directory
+  " name at startup and does not check for its existence subsequently, Vim
+  " does not realise.  This causes E482 errors.
+  try
+    call writefile(bufcontents, a:file, 'b')
+  catch /E482/
+    call mkdir(fnamemodify(a:file, ':h'), '', '0700')
+    call writefile(bufcontents, a:file, 'b')
+  endtry
 endfunction
 
 
 function! s:save_last_seen_change(bufnr) abort
   call gitgutter#utility#setbufvar(a:bufnr, 'tick', getbufvar(a:bufnr, 'changedtick'))
 endfunction
-
-

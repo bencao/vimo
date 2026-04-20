@@ -28,7 +28,6 @@ set colorcolumn=80
 
 " encoding settings
 set encoding=utf-8
-set termencoding=utf-8
 
 " more natural split opening
 set splitbelow

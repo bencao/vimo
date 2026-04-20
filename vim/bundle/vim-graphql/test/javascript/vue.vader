@@ -16,8 +16,8 @@ After:
   syntax enable
 
 Execute (Expected syntax groups):
-  Assert graphql#has_syntax_group('graphqlTemplateExpression')
-  Assert graphql#has_syntax_group('graphqlTemplateString')
+  Assert hlexists('graphqlTemplateExpression')
+  Assert hlexists('graphqlTemplateString')
 
 Given vue (Template):
   <script>
@@ -32,6 +32,7 @@ Given vue (Template):
   </script>
 
 Execute (Syntax assertions):
+  AssertEqual 'html', b:current_syntax
   AssertEqual 'graphqlTaggedTemplate', SyntaxOf('gql')
   AssertEqual 'graphqlStructure', SyntaxOf('query')
 
@@ -40,17 +41,17 @@ Execute (Indent assertions):
   Assert exists('*GetJavascriptIndent')
   Assert exists('*GetJavascriptGraphQLIndent')
 
-Do (re-indent buffer):
-  gg=G
+" Do (re-indent buffer):
+"   gg=G
 
-Expect (propertly indented):
-  <script>
-  export default {
-    apollo: {
-      hello: gql`query {
-        firstName
-        lastName
-      }`,
-    },
-  }
-  </script>
+" Expect (propertly indented):
+"   <script>
+"   export default {
+"     apollo: {
+"       hello: gql`query {
+"         firstName
+"         lastName
+"       }`,
+"     },
+"   }
+"   </script>

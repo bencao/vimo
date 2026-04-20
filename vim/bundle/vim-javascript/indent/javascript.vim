@@ -19,7 +19,7 @@ setlocal indentkeys+=0],0)
 "       "+norm! gg=G" '+%print' '+:q!' testfile.js \
 "       | diff -uBZ testfile.js -
 
-let b:undo_indent = 'setlocal indentexpr< smartindent< autoindent< indentkeys<'
+let b:undo_indent = 'setlocal indentexpr< smartindent< autoindent< indentkeys< lisp<'
 
 " Only define the function once.
 if exists('*GetJavascriptIndent')
@@ -392,7 +392,9 @@ function GetJavascriptIndent()
       if idx != -1
         call s:GetPair(['\[','(','{'][idx],'])}'[idx],'bW','s:SkipFunc()')
       elseif getline(v:lnum) !~ '^\S' && s:stack[-1] =~? 'block\|^jsobject$'
-        call s:GetPair('{','}','bW','s:SkipFunc()')
+        if !s:GetPair('{','}','bW','s:SkipFunc()') && s:stack[-1] ==# 'jsObject'
+          return indent(l:lnum)
+        endif
       else
         call s:AlternatePair()
       endif
