@@ -55,6 +55,50 @@ set autoread
 " Display extra whitespace
 " set list listchars=tab:,trail:·,nbsp:·
 
+""" Improved defaults
+
+" line numbers (relative + absolute current line)
+set number
+set relativenumber
+
+" smart search: case-insensitive unless uppercase is typed
+set ignorecase
+set smartcase
+set incsearch
+
+" allow switching buffers without saving
+set hidden
+
+" command-line completion
+set wildmenu
+set wildmode=longest:full,full
+
+" keep context lines visible when scrolling
+set scrolloff=8
+set sidescrolloff=8
+
+" highlight current line
+set cursorline
+
+" always show the sign column (prevents gitgutter jitter)
+set signcolumn=yes
+
+" faster gitgutter + CursorHold events (default 4000ms is too slow)
+set updatetime=250
+
+" redundant with airline
+set noshowmode
+
+" persistent undo across sessions
+set undofile
+set undodir=~/.config/nvim/undodir
+
+" system clipboard integration (macOS)
+set clipboard=unnamedplus
+
+" always show status line
+set laststatus=2
+
 """ Package manager settings
 
 " pathogen - the runtime for Vim plugins
@@ -90,8 +134,6 @@ nnoremap <leader>Q :q!<CR>
 " nnoremap <leader>p :set paste<CR>
 " nnoremap <leader>P :set nopaste<CR>
 
-let g:ale_linters = { 'javascript': ['eslint', 'flow'], }
-
 " tree
 function! ToggleNERDTreeFind()
   if g:NERDTree.IsOpen()
@@ -123,8 +165,8 @@ nnoremap <silent> <leader>o :ZoomToggle<CR>
 nnoremap <leader>b :CtrlPMixed<CR>
 
 " search text patterns
-nnoremap <leader>a :Ag<SPACE>
-nnoremap <leader>k :Ag "\b<C-R><C-W>\b"<CR>:cw<CR>
+nnoremap <leader>a :Rg<SPACE>
+nnoremap <leader>k :Rg "\b<C-R><C-W>\b"<CR>:cw<CR>
 
 " rebuild ctags
 nnoremap <leader>r :!ctags --recurse=yes --exclude=.git --exclude=.next --exclude=node_modules --exclude=_book .<CR>
@@ -135,23 +177,22 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
-if executable('ag')
-  " Use Ag over Grep
-  set grepprg=ag\ --nogroup\ --nocolor
+if executable('rg')
+  " Use ripgrep over grep
+  set grepprg=rg\ --vimgrep\ --smart-case
+  set grepformat=%f:%l:%c:%m
 
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag -Q -l --nocolor --hidden -g "" %s'
+  " Use rg in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'rg --files --hidden --glob "!.git" %s'
 
-  " ag is fast enough that CtrlP doesn't need to cache
+  " rg is fast enough that CtrlP doesn't need to cache
   let g:ctrlp_use_caching = 0
-
-  if !exists(":Ag")
-    command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
-    nnoremap \ :Ag<SPACE>
-  endif
-
   let g:ctrlp_regexp = 1
 endif
+
+" search command using grepprg
+command! -nargs=+ -complete=file -bar Rg silent! grep! <args> | cwindow | redraw!
+nnoremap \ :Rg<SPACE>
 
 """ EasyMotion settings
 
@@ -172,7 +213,10 @@ vmap <Enter> <Plug>(EasyAlign)
 au FileType markdown vmap <Leader><Bslash> :EasyAlign*<Bar><Enter>
 
 """ Color settings
-colorscheme afterglow
+let g:gruvbox_material_background = 'medium'
+let g:gruvbox_material_foreground = 'material'
+let g:gruvbox_material_better_performance = 1
+colorscheme gruvbox-material
 
 """ Prettier settings
 

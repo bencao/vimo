@@ -18,15 +18,15 @@ BUNDLE_DIR="$VIMO/vim/bundle"
 
 # name|upstream-url — sources: PLUGINS.md, plus vim-jst (not listed there).
 BUNDLES=(
-  "ag.vim|https://github.com/rking/ag.vim.git"
+  # ag.vim removed — replaced by ripgrep via built-in :grep
   "copilot.vim|https://github.com/github/copilot.vim.git"
-  "ctrlp.vim|https://github.com/kien/ctrlp.vim.git"
+  "ctrlp.vim|https://github.com/ctrlpvim/ctrlp.vim.git"
   "elm.vim|https://github.com/lambdatoast/elm.vim.git"
   "nerdtree|https://github.com/scrooloose/nerdtree.git"
   "rust.vim|https://github.com/rust-lang/rust.vim.git"
   "supertab|https://github.com/ervandew/supertab.git"
   "typescript-vim|https://github.com/leafgarland/typescript-vim.git"
-  "vim-afterglow|https://github.com/danilo-augusto/vim-afterglow.git"
+  "gruvbox-material|https://github.com/sainnhe/gruvbox-material.git"
   "vim-airline|https://github.com/vim-airline/vim-airline.git"
   "vim-better-whitespace|https://github.com/ntpeters/vim-better-whitespace.git"
   "vim-commentary|https://github.com/tpope/vim-commentary.git"
@@ -38,11 +38,12 @@ BUNDLES=(
   "vim-graphql|https://github.com/jparise/vim-graphql.git"
   "vim-javascript|https://github.com/pangloss/vim-javascript.git"
   "vim-jst|https://github.com/briancollins/vim-jst.git"
-  "vim-multiple-cursors|https://github.com/terryma/vim-multiple-cursors.git"
+  "vim-visual-multi|https://github.com/mg979/vim-visual-multi.git"
   "vim-prettier|https://github.com/prettier/vim-prettier.git"
   "vim-repeat|https://github.com/tpope/vim-repeat.git"
   "vim-solidity|https://github.com/tomlion/vim-solidity.git"
   "vim-surround|https://github.com/tpope/vim-surround.git"
+  "vim-sleuth|https://github.com/tpope/vim-sleuth.git"
   "vim-terraform|https://github.com/hashivim/vim-terraform.git"
 )
 

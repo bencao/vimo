@@ -9,6 +9,7 @@ then
 fi
 
 mkdir -p ~/.config/nvim
+mkdir -p ~/.config/nvim/undodir
 
 ln -s "$VIMO/vim/autoload" ~/.config/nvim/autoload
 ln -s "$VIMO/vim/bundle" ~/.config/nvim/bundle

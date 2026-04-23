@@ -62,7 +62,7 @@ rm -rf ~/.vimo
 ### Search & Navigations Bindings
 
 - [normal mode] <kbd>Space then b</kbd> browse files, use <kbd>Ctrl + j</kbd>/<kbd>Ctrl + k</kbd> to move between candidates ![Demo](https://raw.githubusercontent.com/bencao/vimo/master/demo/ctrlp.gif)
-- [normal mode] <kbd>Space then a</kbd> search text patterns in directories using Ag, the result will be shown in a [Quickfix](http://usevim.com/2012/08/24/vim101-quickfix/) window
+- [normal mode] <kbd>Space then a</kbd> search text patterns in directories using Rg (ripgrep), the result will be shown in a [Quickfix](http://usevim.com/2012/08/24/vim101-quickfix/) window
 
 ### Windows Key Bindings
 
