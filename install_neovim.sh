@@ -31,3 +31,8 @@ ln -s "$VIMO/vim/bundle" "$NVIM_CONFIG/bundle"
 ln -s "$VIMO/vimrc" "$NVIM_CONFIG/init.vim"
 
 echo "vimo installed for NeoVim."
+echo
+
+# Report on the external tools the plugins shell out to. Advisory only:
+# a missing tool disables a feature, it does not break the install.
+"$VIMO/check_prereqs.sh" || true

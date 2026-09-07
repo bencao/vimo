@@ -36,3 +36,8 @@ ln -s "$VIMO/vim/bundle" "$HOME/.vim/bundle"
 ln -s "$VIMO/vimrc" "$HOME/.vimrc"
 
 echo "vimo installed for Vim."
+echo
+
+# Report on the external tools the plugins shell out to. Advisory only:
+# a missing tool disables a feature, it does not break the install.
+"$VIMO/check_prereqs.sh" || true

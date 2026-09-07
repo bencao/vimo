@@ -37,15 +37,38 @@ CONTENTS                                  *vimo-contents*
 
 ### Format/Alignment Key Bindings
 
-- [normal/visual mode] `space then p` format the file with Prettier
+- [normal/visual mode] `space then p` format the file (ALE: prettier for JS/TS/CSS/JSON/YAML/Markdown, gofmt for Go, rustfmt for Rust)
 - [visual mode] `enter then =` align selected lines by =
 - [visual mode] `enter then :` align selected lines by :
 
 ### Search & Navigations Bindings
 
-- [normal mode] `space then b` browse files, use `ctrl + j/k` to move between candidates
+- [normal mode] `space then b` fuzzy-find files (fzf), use `ctrl + j/k` to move between candidates
+- [normal mode] `space then B` fuzzy-find open buffers
+- [normal mode] `space then l` fuzzy-find lines in the current buffer
 - [normal mode] `space then a` search text patterns in directories using Rg (ripgrep), the result will be shown in a [Quickfix](http://usevim.com/2012/08/24/vim101-quickfix/) window
 - [normal mode] `space then k` search the word under the cursor (whole words only) in directories using Rg (ripgrep), the result will be shown in a [Quickfix](http://usevim.com/2012/08/24/vim101-quickfix/) window
+
+### Diagnostics and Code Intelligence Bindings
+
+- [normal mode] `space then d` show the full diagnostic under the cursor
+- [normal mode] `space then g` go to the definition under the cursor
+- [normal mode] `] then w` / `[ then w` next/previous diagnostic
+- [insert mode] `tab` completes from the language server when one is running
+
+### Undo, Tests and Discoverability
+
+- [normal mode] `space then u` toggle the undo history tree
+- [normal mode] `space then n` run the test nearest the cursor
+- [normal mode] `space then N` run every test in the file
+- [normal mode] `space then ?` show the available leader bindings
+
+### Bracket Bindings
+
+- [normal mode] `] or [ then q` next/previous quickfix entry
+- [normal mode] `] or [ then b` next/previous buffer
+- [normal mode] `] or [ then c` next/previous git hunk
+- [normal mode] `y then o then an option letter` toggles that option, e.g. `yow` for wrap
 
 ### Windows Key Bindings
 

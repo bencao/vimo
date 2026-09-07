@@ -1,0 +1,33 @@
+if !exists('g:test#ruby#cucumber#file_pattern')
+  let g:test#ruby#cucumber#file_pattern = '\v\.feature$'
+endif
+
+function! test#ruby#cucumber#test_file(file) abort
+  if a:file =~# g:test#ruby#cucumber#file_pattern
+    return !empty(glob('features/**/*.rb'))
+  endif
+endfunction
+
+function! test#ruby#cucumber#build_position(type, position) abort
+  if a:type ==# 'nearest'
+    return [a:position['file'].':'.a:position['line']]
+  elseif a:type ==# 'file'
+    return [a:position['file']]
+  else
+    return []
+  endif
+endfunction
+
+function! test#ruby#cucumber#build_args(args, color) abort
+  let args = a:args
+
+  if !a:color
+    let args = ['--no-color'] + args
+  endif
+
+  return args
+endfunction
+
+function! test#ruby#cucumber#executable() abort
+  return test#ruby#determine_executable('cucumber')
+endfunction
