@@ -1,8 +1,0 @@
-filetype off
-set runtimepath^=../
-set runtimepath+=../.bundle/vader.vim/
-filetype plugin indent on
-syntax enable
-set nomore
-set noswapfile
-set viminfo=

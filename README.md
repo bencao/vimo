@@ -38,7 +38,17 @@ For system-clipboard integration your Vim needs to be built with `+clipboard`
 </p>
 </details>
 
-Also install [Universal Ctags](https://github.com/universal-ctags/ctags) for ctags based code navigation.
+External tools the plugins use:
+
+```
+brew install ripgrep universal-ctags fzf node
+```
+
+None are required to start vimo, and each install script ends by running
+`check_prereqs.sh`, which reports what is missing and which feature it costs
+you. Two notes: macOS ships a BSD `ctags` that rejects `-R`, so `<leader>r`
+and vim-gutentags both need Universal Ctags (gutentags stays disabled until
+it is installed), and ALE's Prettier fixer needs `node`.
 
 ## Uninstallation
 
@@ -98,16 +108,43 @@ rm -rf ~/.vimo
 
 ### Format/Alignment Key Bindings
 
-- [normal/visual mode] <kbd>Space then p</kbd> format the file with Prettier
+- [normal/visual mode] <kbd>Space then p</kbd> format the file (ALE; uses Prettier for JS/TS/CSS/JSON/YAML/Markdown, gofmt for Go, rustfmt for Rust)
 - [visual mode] <kbd>Enter then =</kbd> align selected lines by =
 - [visual mode] <kbd>Enter then :</kbd> align selected lines by :
 
 ### Search & Navigations Bindings
 
-- [normal mode] <kbd>Space then b</kbd> browse files, use <kbd>Ctrl + j</kbd>/<kbd>Ctrl + k</kbd> to move between candidates ![Demo](https://raw.githubusercontent.com/bencao/vimo/master/demo/ctrlp.gif)
+- [normal mode] <kbd>Space then b</kbd> fuzzy-find files (fzf), use <kbd>Ctrl + j</kbd>/<kbd>Ctrl + k</kbd> to move between candidates ![Demo](https://raw.githubusercontent.com/bencao/vimo/master/demo/ctrlp.gif)
+- [normal mode] <kbd>Space then B</kbd> fuzzy-find open buffers
+- [normal mode] <kbd>Space then l</kbd> fuzzy-find lines in the current buffer
 - [normal mode] <kbd>Space then a</kbd> search text patterns in directories using Rg (ripgrep), the result will be shown in a [Quickfix](http://usevim.com/2012/08/24/vim101-quickfix/) window
 - [normal mode] <kbd>Space then k</kbd> search the word under the cursor (whole words only), same Quickfix window
 - [normal mode] <kbd>\</kbd> same as <kbd>Space then a</kbd>
+
+### Diagnostics and Code Intelligence Bindings
+
+ALE provides these; each needs the relevant linter or language server on `PATH`.
+
+- [normal mode] <kbd>Space then d</kbd> show the full diagnostic under the cursor
+- [normal mode] <kbd>Space then g</kbd> go to the definition under the cursor
+- [normal mode] <kbd>]</kbd> then <kbd>w</kbd> / <kbd>[</kbd> then <kbd>w</kbd> next/previous diagnostic
+- [insert mode] <kbd>Tab</kbd> completes from the language server when one is running, otherwise from keywords in the buffer
+
+### Undo, Tests and Discoverability
+
+- [normal mode] <kbd>Space then u</kbd> toggle the undo history tree
+- [normal mode] <kbd>Space then n</kbd> run the test nearest the cursor
+- [normal mode] <kbd>Space then N</kbd> run every test in the file
+- [normal mode] <kbd>Space then ?</kbd> show the available leader bindings
+
+### Bracket Bindings
+
+From vim-unimpaired, plus a few from other plugins:
+
+- [normal mode] <kbd>]</kbd>/<kbd>[</kbd> then <kbd>q</kbd> next/previous quickfix entry (pairs with <kbd>Space then a</kbd>)
+- [normal mode] <kbd>]</kbd>/<kbd>[</kbd> then <kbd>b</kbd> next/previous buffer
+- [normal mode] <kbd>]</kbd>/<kbd>[</kbd> then <kbd>c</kbd> next/previous git hunk (gitgutter)
+- [normal mode] <kbd>y</kbd> then <kbd>o</kbd> then an option letter toggles that option, e.g. <kbd>yow</kbd> for wrap
 
 ### Windows Key Bindings
 
