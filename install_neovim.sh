@@ -1,16 +1,33 @@
 #!/usr/bin/env bash
+# Install vimo for NeoVim.
+#
+# ~/.config/nvim is a real directory with only autoload/ and bundle/ symlinked
+# into this repo, and init.vim points at ./vimrc. Keeping the directory real
+# matters: nvim writes undo history there at runtime, and if the whole thing
+# were a symlink into the repo that state would land in git.
 
-VIMO=$(dirname $(realpath "$0"))
+set -euo pipefail
 
-if [ -d ~/.config/nvim ]
-then
-  rm -rf ~/.config/nvim_old
-  mv ~/.config/nvim ~/.config/nvim_old
+VIMO=$(cd "$(dirname "$0")" && pwd)
+NVIM_CONFIG="$HOME/.config/nvim"
+
+# Re-running must not clobber the genuine backup with vimo's own symlinks.
+if [ -L "$NVIM_CONFIG/init.vim" ] &&
+   [ "$(readlink "$NVIM_CONFIG/init.vim")" = "$VIMO/vimrc" ]; then
+  echo "vimo is already installed for NeoVim; nothing to do."
+  exit 0
 fi
 
-mkdir -p ~/.config/nvim
-mkdir -p ~/.config/nvim/undodir
+if [ -e "$NVIM_CONFIG" ] || [ -L "$NVIM_CONFIG" ]; then
+  rm -rf "$HOME/.config/nvim_old"
+  mv "$NVIM_CONFIG" "$HOME/.config/nvim_old"
+  echo "moved existing ~/.config/nvim to ~/.config/nvim_old"
+fi
 
-ln -s "$VIMO/vim/autoload" ~/.config/nvim/autoload
-ln -s "$VIMO/vim/bundle" ~/.config/nvim/bundle
-ln -s "$VIMO/vimrc" ~/.config/nvim/init.vim
+mkdir -p "$NVIM_CONFIG/undodir"
+
+ln -s "$VIMO/vim/autoload" "$NVIM_CONFIG/autoload"
+ln -s "$VIMO/vim/bundle" "$NVIM_CONFIG/bundle"
+ln -s "$VIMO/vimrc" "$NVIM_CONFIG/init.vim"
+
+echo "vimo installed for NeoVim."

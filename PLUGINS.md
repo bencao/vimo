@@ -16,7 +16,6 @@ Definition of Importance
 | Plugin        | Value           | Importance | Alternatives |
 | :------------ | :-------------- | :--------: | :----------- |
 | (removed) ag.vim | Replaced by ripgrep via built-in `:grep` — no plugin needed | - | - |
-| [Copilot](https://github.com/github/copilot.vim) | GitHub Copilot provides autocomplete-style suggestions from an AI pair programmer as you code. | High | |
 | [CtrlP](https://github.com/ctrlpvim/ctrlp.vim) | Quickly navigate to any files given a fuzzy matching pattern | Essential | [Unite](https://github.com/Shougo/unite.vim.git) (sometimes hung for big projects) |
 | [elm.vim](https://github.com/lambdatoast/elm.vim) | Elm lang support: syntax highlighting and indent | Medium | N/A |
 | [NerdTree](https://github.com/scrooloose/nerdtree.git) | Tree view of project files and handy create/delete/update file operations | Essential | [netrw](http://www.vim.org/scripts/script.php?script_id=1075) (shipped with VIM but missing features) |
@@ -25,7 +24,7 @@ Definition of Importance
 | [typescript-vim](https://github.com/leafgarland/typescript-vim) | Typescript support: syntax highlighting and indent | Medium | N/A |
 | [gruvbox-material](https://github.com/sainnhe/gruvbox-material) | Warm dark colorscheme with material design palette, airline integration | High | [tokyonight](https://github.com/folke/tokyonight.nvim) (cool-toned), [catppuccin](https://github.com/catppuccin/nvim) (pastel) |
 | [VIM Airline](https://github.com/bling/vim-airline.git) | Beautiful status line | Medium | [Powerline](https://github.com/powerline/powerline) (too heavy) |
-| [VIM better whitespace](https://github.com/ntpeters/vim-better-whitespace.git) | Showing trailing white space and auto strip when quit | Medium | [VIM trailing whitespace](https://github.com/bronson/vim-trailing-whitespace) (older) |
+| [VIM better whitespace](https://github.com/ntpeters/vim-better-whitespace.git) | Highlights trailing whitespace; strip it with `:StripWhitespace` (auto-strip on save is available via `g:strip_whitespace_on_save` but deliberately left off, to avoid unrelated diffs in shared repos) | Medium | [VIM trailing whitespace](https://github.com/bronson/vim-trailing-whitespace) (older) |
 | [VIM Commentary](https://github.com/tpope/vim-commentary.git) | Toggle comment/uncomment for selected lines | Medium | [NerdCommenter](https://github.com/scrooloose/nerdcommenter) |
 | [VIM Easy Align](https://github.com/junegunn/vim-easy-align.git) | Align code lines in a manner that ':' or '=' symbol in the same column | Medium | N/A |
 | [VIM EasyMotion](https://github.com/easymotion/vim-easymotion.git) | Move to anywhere in screen in a few key strokes | High | N/A |
