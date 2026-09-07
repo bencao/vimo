@@ -19,7 +19,6 @@ BUNDLE_DIR="$VIMO/vim/bundle"
 # name|upstream-url — sources: PLUGINS.md, plus vim-jst (not listed there).
 BUNDLES=(
   # ag.vim removed — replaced by ripgrep via built-in :grep
-  "copilot.vim|https://github.com/github/copilot.vim.git"
   "ctrlp.vim|https://github.com/ctrlpvim/ctrlp.vim.git"
   "elm.vim|https://github.com/lambdatoast/elm.vim.git"
   "nerdtree|https://github.com/scrooloose/nerdtree.git"
@@ -140,6 +139,27 @@ if [ "$#" -eq 0 ]; then
       printf "  %-28s on disk but not in update list\n" "$dname"
     fi
   done
+fi
+
+# Regenerate help tags for the vendored bundles. The vimrc used to run
+# :Helptags on every launch, which cost ~11ms of a ~66ms startup; bundle docs
+# only change when this script runs, so it belongs here.
+helptags_expr="for d in split(glob('$BUNDLE_DIR/*/doc'), \"\\n\") | silent! execute 'helptags' fnameescape(d) | endfor"
+printf "\nRegenerating help tags... "
+if command -v nvim >/dev/null 2>&1; then
+  if nvim --headless -u NONE -c "$helptags_expr" -c 'qa!' >/dev/null 2>&1; then
+    printf "done (nvim)\n"
+  else
+    printf "FAILED\n"
+  fi
+elif command -v vim >/dev/null 2>&1; then
+  if vim -es -u NONE -c "$helptags_expr" -c 'qa!' >/dev/null 2>&1; then
+    printf "done (vim)\n"
+  else
+    printf "FAILED\n"
+  fi
+else
+  printf "skipped (no vim/nvim on PATH)\n"
 fi
 
 printf "\nDone: %d updated, %d failed, %d skipped.\n" "$ok" "$fail" "$skipped"
